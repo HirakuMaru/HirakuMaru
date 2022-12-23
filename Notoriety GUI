@@ -1,0 +1,145 @@
+local function fireproximityprompt(Obj, Amount, Skip)
+    if Obj.ClassName == "ProximityPrompt" then 
+        Amount = Amount or 1
+        local PromptTime = Obj.HoldDuration
+        if Skip then 
+            Obj.HoldDuration = 0
+        end
+        for i = 1, Amount do 
+            Obj:InputHoldBegin()
+            if not Skip then 
+                wait(Obj.HoldDuration)
+            end
+            Obj:InputHoldEnd()
+        end
+        Obj.HoldDuration = PromptTime
+    else 
+        error("userdata<ProximityPrompt> expected")
+    end
+end
+
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "Notoriety", HidePremium = false, SaveConfig = true, ConfigFolder = "NotorityGUI"})
+
+
+local Tab = Window:MakeTab({
+	Name = "Player",
+	Icon = "rbxassetid://6802936804",
+	PremiumOnly = false
+})
+
+local Section = Tab:AddSection({
+	Name = "Interaction"
+})
+
+local k1I=Tab:AddBind({
+	Name = "Interact",
+	Default = Enum.KeyCode.E,
+	Hold = false,
+	Callback = function()
+        for i, v in pairs(game:GetService("Workspace"):GetDescendants()) do
+            if v.Name=="ProximityPrompt" then 
+                fireproximityprompt(v,1,true)
+            end        
+        end    
+    end
+})
+
+local k2P=Tab:AddBind({
+	Name = "PickLock",
+	Default = Enum.KeyCode.Q,
+	Hold = false,
+	Callback = function()
+        for i, v in pairs(game:GetService("Workspace"):GetDescendants()) do
+            if v.Name=="ProximityPromptPickLock" then 
+                fireproximityprompt(v,1,true)
+            end        
+        end    
+    end
+})
+
+local Section = Tab:AddSection({
+	Name = "Teleports"
+})
+
+local k3B=Tab:AddBind({
+	Name = "Teleport bags to Evacuation",
+	Default = Enum.KeyCode.B,
+	Hold = false,
+	Callback = function()
+        for i,v in pairs(game:GetService("Workspace").Bags:GetDescendants()) do
+            if v.Name == 'MoneyBag' then
+            v.CFrame = game:GetService("Workspace").BagSecuredArea.FloorPart.CFrame * CFrame.new(0,0,10)
+            end
+        end
+    end
+})
+
+local k3B=Tab:AddBind({
+	Name = "Teleport Player to Evacuation",
+	Default = Enum.KeyCode.P,
+	Hold = false,
+	Callback = function()
+        local plr = game.Players.LocalPlayer.Name
+        game:GetService("Workspace").Criminals[plr].HumanoidRootPart.CFrame = game:GetService("Workspace").BagSecuredArea.FloorPart.CFrame
+    end
+})
+
+
+local Tab2 = Window:MakeTab({
+	Name = "Stats",
+	Icon = "rbxassetid://6802936804",
+	PremiumOnly = false
+})
+
+local Section = Tab2:AddSection({
+	Name = "Player"
+})
+
+Tab2:AddSlider({
+	Name = "MaxStamina",
+	Min = 100,
+	Max = 2000,
+	Default = 100,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 10,
+	ValueName = "Stam",
+	Callback = function(Value)
+        local plr = game.Players.LocalPlayer.Name
+        local v = game:GetService("Workspace").Criminals[plr]
+        v.MaxStamina.Value = (Value)
+    end
+})
+Tab2:AddButton({
+	Name = "Fill Stamina?",
+	Callback = function()
+        local plr = game.Players.LocalPlayer.Name
+        local v = game:GetService("Workspace").Criminals[plr]
+        v.Stamina.Value = 2*10e3 --2k
+    end    
+})
+
+local Tab3 = Window:MakeTab({
+	Name = "Misc",
+	Icon = "rbxassetid://6802936804",
+	PremiumOnly = false
+})
+
+Tab3:AddButton({
+	Name = "Yeet NPCs",
+	Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/2567-rblx/scripts/main/Notoriety/RemoveNPCs.lua",true))()
+  	end    
+})
+Tab3:AddButton({
+	Name = "Delete Glass",
+	Callback = function()
+        for i,v in pairs(game:GetService("Workspace").Glass:GetChildren()) do
+            if v.Name == 'Glass' then
+            v:Destroy()
+            end
+        end
+  	end    
+})
+
+OrionLib:Init()
